@@ -1,0 +1,468 @@
+{
+  "name": "sheets",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d0447a82-2acf-46ba-bfd7-3470f719d20e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1M8JuxTOCF3cXt4PVyu1tTGf72Qk7HbYMZREDReZDa7A",
+          "mode": "list",
+          "cachedResultName": "testsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M8JuxTOCF3cXt4PVyu1tTGf72Qk7HbYMZREDReZDa7A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M8JuxTOCF3cXt4PVyu1tTGf72Qk7HbYMZREDReZDa7A/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "c7788e45-938a-4ed7-ac9d-9d897c835795",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t76BLe7OoOTna3OM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is a customer lead data:\n\nName: {{ $json.Name }}\nCompany: {{ $json.Company }}\nInterested Service : {{ $json['Interested Service'] }}\n\n\nBased on this, write the subject line, elevator pitch, ice breaker, call to action, and P.S. Return it in this JSON format:\n{\n  \"subject\": \"...\",\n  \"ice_breaker\": \"...\",\n  \"elevator_pitch\": \"...\",\n  \"call_to_action\": \"...\",\n  \"ps\": \"...\"\n}\n",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an expert B2B marketing copywriter. You specialize in writing personalized cold emails using lead data. Based on the input customer data, generate concise and persuasive email components including:  1. Subject line (attention-grabbing and relevant) 2. Elevator pitch (short value proposition) 3. Ice breaker (personal opening line) 4. Call to action (a single clear CTA) 5. P.S. (friendly close with soft nudge or value)  The output must be in **JSON format** with each component in a separate key. Keep it brief, clear, and in a natural tone suitable for email. Do not include any explanations or extra text — only return the JSON."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        440,
+        0
+      ],
+      "id": "7eb58cfd-1a7a-4141-bb77-9efecccea4a2",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-04-17",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        540,
+        220
+      ],
+      "id": "bfe82c38-3af0-4a59-a6b5-1fd971cbabab",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "UZJ2T8PgxdmqNSBq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1M8JuxTOCF3cXt4PVyu1tTGf72Qk7HbYMZREDReZDa7A",
+          "mode": "list",
+          "cachedResultName": "testsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M8JuxTOCF3cXt4PVyu1tTGf72Qk7HbYMZREDReZDa7A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1M8JuxTOCF3cXt4PVyu1tTGf72Qk7HbYMZREDReZDa7A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "=",
+            "Lead ID": "={{ $('Google Sheets').item.json['Lead ID'] }}",
+            "Subject": "={{ $json.output.subject }}",
+            "Ice Breaker": "={{ $json.output.icebreaker }}",
+            "Elevator Pitch": "={{ $json.output.elevator_pitch }}",
+            "Call to Action": "={{ $json.output.call_to_action }}",
+            "PS": "={{ $json.output.ps }}"
+          },
+          "matchingColumns": [
+            "Lead ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead ID",
+              "displayName": "Lead ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Source",
+              "displayName": "Lead Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Interested Service",
+              "displayName": "Interested Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ice Breaker",
+              "displayName": "Ice Breaker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Elevator Pitch",
+              "displayName": "Elevator Pitch",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Call to Action",
+              "displayName": "Call to Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PS",
+              "displayName": "PS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        800,
+        0
+      ],
+      "id": "8fc5cd1f-3b5d-4ddf-9d90-d46a815ebe04",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t76BLe7OoOTna3OM",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"subject\":\"\", \"icebreaker\":\"\", \"elevator_pitch\":\"\", \"call_to_action\":\"\", \"ps\":\"\"}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        680,
+        220
+      ],
+      "id": "2ffaa0b0-b9e8-4042-beaf-9196bfe40857",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets').item.json.Email }}",
+        "subject": "={{ $json.Subject }}",
+        "message": "=Hey {{ $('Google Sheets').item.json.Name }}, \n<br><br>\n{{ $json['Ice Breaker'] }}\n<br><br>\n{{ $json['Elevator Pitch'] }}\n<br><br>\n{{ $json['Call to Action'] }}\n<br><br>\n{{ $json.PS }}\nthank you \njijesh.\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1020,
+        0
+      ],
+      "id": "c3b5db9e-7923-45f6-bd76-7b64e61e9167",
+      "name": "Gmail",
+      "webhookId": "e2d82479-7f2d-4441-87d6-a8287a18f846",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "PhFANqtxKVnEDm00",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Google Sheets": [
+      {
+        "json": {
+          "row_number": 2,
+          "Lead ID": 201,
+          "Name": "Neha Verma",
+          "Email": "jijeshrajk21@gmail.com",
+          "Phone": 9876102345,
+          "Company": "Verma Ventures",
+          "Lead Source": "Website Form",
+          "Status": "New",
+          "Interested Service": "Business Automation",
+          "Subject": "",
+          "Ice Breaker": "",
+          "Elevator Pitch": "",
+          "Call to Action": "",
+          "PS": ""
+        }
+      },
+      {
+        "json": {
+          "row_number": 3,
+          "Lead ID": 202,
+          "Name": "Rakesh Nair",
+          "Email": "jijeshrajk21@gmail.com",
+          "Phone": 9845201987,
+          "Company": "Nair & Co.",
+          "Lead Source": "LinkedIn Ad",
+          "Status": "New",
+          "Interested Service": "Lead Management",
+          "Subject": "",
+          "Ice Breaker": "",
+          "Elevator Pitch": "",
+          "Call to Action": "",
+          "PS": ""
+        }
+      },
+      {
+        "json": {
+          "row_number": 4,
+          "Lead ID": 203,
+          "Name": "Tanya Joseph",
+          "Email": "jijeshrajk21@gmail.com",
+          "Phone": 9765432110,
+          "Company": "Digital Sparks",
+          "Lead Source": "Webinar Sign-up",
+          "Status": "New",
+          "Interested Service": "CRM Automation",
+          "Subject": "",
+          "Ice Breaker": "",
+          "Elevator Pitch": "",
+          "Call to Action": "",
+          "PS": ""
+        }
+      },
+      {
+        "json": {
+          "row_number": 5,
+          "Lead ID": 204,
+          "Name": "Amit Roy",
+          "Email": "jijeshrajk21@gmail.com",
+          "Phone": 9923345567,
+          "Company": "GrowthFoundry",
+          "Lead Source": "Referral",
+          "Status": "New",
+          "Interested Service": "Workflow Automation",
+          "Subject": "",
+          "Ice Breaker": "",
+          "Elevator Pitch": "",
+          "Call to Action": "",
+          "PS": ""
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a958ed37-0858-4e5e-8b2e-9b4455cf1e40",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f7ac36f852067a5b3db3cbf5a940294def9142344a5101c2d5ef27d62afd36d"
+  },
+  "id": "F84asLNDVHH65LZR",
+  "tags": []
+}
