@@ -1,0 +1,888 @@
+{
+  "name": "airtable",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7ef70a2c-fd32-490e-8cd7-5edf60464c26",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "base",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b79bf652-c529-48ad-b990-30803acb3fbb",
+      "name": "Get many bases",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "yvEnp2K2VCx2eUnY",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "base",
+        "operation": "getSchema",
+        "base": {
+          "__rl": true,
+          "value": "appg1BKEffNkl0Lns",
+          "mode": "list",
+          "cachedResultName": "n8n ",
+          "cachedResultUrl": "https://airtable.com/appg1BKEffNkl0Lns"
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3a509662-921c-4813-9972-5b5387a6e957",
+      "name": "Get base schema",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "yvEnp2K2VCx2eUnY",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.airtable.com/v0/{{ $('Get many bases').item.json.id }}/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer patyZ1dQWrxb2YVlH.48426522b591a5b74ea15294ff5e05563c05838472ce4b15ac87d15a8d613272"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "39a9b1d7-8789-4641-86b5-b24568d40d15",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "6a6ff93f-e28c-4dc6-8763-67d85d603ad2",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fields['task status'] }}",
+                    "rightValue": "Not Started",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3ff5fab7-c9f7-4d9a-b060-57d6c2b05353"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8612ef9d-ff22-40ad-897e-6d052834e99a",
+                    "leftValue": "={{ $json.fields['task status'] }}",
+                    "rightValue": "Overdue",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0a854257-e64d-4fb2-bfb7-17448ee6a265",
+                    "leftValue": "={{ $json.fields['task status'] }}",
+                    "rightValue": "In Progress",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ad25d69e-f38a-4d72-af2d-e729dc35e6b7",
+                    "leftValue": "={{ $json.fields['task status'] }}",
+                    "rightValue": "Started",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1200,
+        -32
+      ],
+      "id": "41168d5b-4223-440a-9542-61c162c4a37a",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "records",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "f4f8b1d7-2061-4349-9e13-9791ce1ced9a",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {
+          "timezone": "Asia/Kolkata"
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        -240
+      ],
+      "id": "61c0c239-0dd7-40aa-9477-9be446f8f2a3",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Current Date :  {{ $('Split Out').item.json.fields['Start date'] }}\ntask id : {{ $('Switch').item.json.id }}\nStart Date : {{ $json.currentDate }}\nassigne : {{ $('Switch').item.json.fields.Status }}\nemail : {{ $('Switch').item.json.fields.email }}\ntask naem : {{ $('Switch').item.json.fields.Name }}\ndue date :{{ $('Switch').item.json.fields['due date'] }} ",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are given two dates and the name, id, due date, assigne, email of the task : the current date , start date and the id, due date , assigne, email, name  of the of a task.  \nTask: Compare the two dates. If the current date matches exactly with the start date, respond with \"Yes\" in the start_today field. Otherwise, respond with \"No\". \nreturn in the format mentioned in the output parser node. \nExample 1: Current Date: 2025-08-20 Start Date: 2025-08-20 Output: Yes  \nExample 2: Current Date: 2025-08-20 Start Date: 2025-08-21 Output: No  "
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1680,
+        -240
+      ],
+      "id": "8923e84a-b3a0-47bf-95d4-a7ea71c19f2b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        -32
+      ],
+      "id": "7f2dda1e-1711-4c7d-a53b-d81a583fa918",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JzxGHJmVTUpg5MHP",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"tasks\": [\n    {\n      \"task_number\": \"1\",\n      \"task_name\": \"Prepare report\",\n      \"task_id\": \"T001\",\n      \"email\": \"john@example.com\",\n      \"due_date\": \"2025-08-25\",\n      \"assignee\": \"John Doe\",\n      \"starts_today\": \"Yes\"\n    },\n    {\n      \"task_number\": \"2\",\n      \"task_name\": \"Client meeting\",\n      \"task_id\": \"T002\",\n      \"email\": \"jane@example.com\",\n      \"due_date\": \"2025-08-28\",\n      \"assignee\": \"Jane Smith\",\n      \"starts_today\": \"No\"\n    }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1904,
+        -32
+      ],
+      "id": "64df5953-528f-43b8-b79c-031ed2f76bf4",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        -240
+      ],
+      "id": "b2d82c99-04c2-4b71-bff2-351650097486",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "49279334-ee8a-4484-bf54-8d539c5d804f",
+              "leftValue": "={{ $json['0'].starts_today }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        -240
+      ],
+      "id": "a991a981-7107-49c3-8774-022a2103cf41",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.fields.email }}",
+        "subject": "Regarding the project",
+        "message": "={{ $('Basic LLM Chain1').item.json.output.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3072,
+        -512
+      ],
+      "id": "56af9dd4-1071-4a3e-a32f-283d24e9f47b",
+      "name": "Send a message",
+      "webhookId": "ba91919e-afa6-41a2-9d07-7e1c4116e7cb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ywV22MUqVXiLlevJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=task_name : {{ $json['0'].task_name }}\ndue_date : {{ $json['0'].due_date }}\nassignee : {{ $json['0'].assignee }}\nemail : {{ $json['0'].email }}\ntask_id : {{ $json['0'].task_id }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Prompt: You are an assistant that crafts professional reminder emails.\nI will provide you with:  \nAssignee name  \nTask name  \nDue date  \nemail\nUsing this information, write a short, polite email with the following structure: \n \nHi [Assignee Name],    Your project \"[Task Name]\" starts today, and the due date is [Due Date].   So kindly start this project today.    \nThank you.    \nreturn the output as mentioned in the output parser node. \nKeep the tone professional yet friendly. Do not add extra information beyond what is provided."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2496,
+        -512
+      ],
+      "id": "7d7fd6ef-f549-40cb-9c90-ff37eab6d1fa",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2496,
+        -336
+      ],
+      "id": "36519b09-4f4d-4498-b0bb-a4d509ae4de1",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JzxGHJmVTUpg5MHP",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"text\": \"Hi diana,<br><br>Your project 'QA testing' starts today, and the due date is 2025-09-01.<br><br> so kindly start this project today.<br><br> thank you. \",\n\t\"email\": \"jijeshrajk@gmail.com\",\n    \"task_id\" : \"rec0yn3dkSvbbSAZA\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2656,
+        -336
+      ],
+      "id": "527db5aa-f4f3-415a-9c1c-81717259119b",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appg1BKEffNkl0Lns",
+          "mode": "list",
+          "cachedResultName": "n8n ",
+          "cachedResultUrl": "https://airtable.com/appg1BKEffNkl0Lns"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl1k3KqfAYAwrztj",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appg1BKEffNkl0Lns/tbl1k3KqfAYAwrztj"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "task status": "Started",
+            "id": "={{ $json.output.task_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Todo",
+                  "value": "Todo"
+                },
+                {
+                  "name": "In progress",
+                  "value": "In progress"
+                },
+                {
+                  "name": "Done",
+                  "value": "Done"
+                },
+                {
+                  "name": "due date",
+                  "value": "due date"
+                },
+                {
+                  "name": "8/24/2025",
+                  "value": "8/24/2025"
+                },
+                {
+                  "name": "8/26/2025",
+                  "value": "8/26/2025"
+                },
+                {
+                  "name": "8/29/2025",
+                  "value": "8/29/2025"
+                },
+                {
+                  "name": "9/1/2025",
+                  "value": "9/1/2025"
+                },
+                {
+                  "name": "9/4/2025",
+                  "value": "9/4/2025"
+                },
+                {
+                  "name": "email",
+                  "value": "email"
+                },
+                {
+                  "name": "jijeshrajk@gmail.com",
+                  "value": "jijeshrajk@gmail.com"
+                },
+                {
+                  "name": "Email",
+                  "value": "Email"
+                },
+                {
+                  "name": "Assigned To",
+                  "value": "Assigned To"
+                },
+                {
+                  "name": "Alice",
+                  "value": "Alice"
+                },
+                {
+                  "name": "Bob",
+                  "value": "Bob"
+                },
+                {
+                  "name": "Charlie",
+                  "value": "Charlie"
+                },
+                {
+                  "name": "Diana",
+                  "value": "Diana"
+                },
+                {
+                  "name": "Ethan",
+                  "value": "Ethan"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "due date",
+              "displayName": "due date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "notes/comments copy",
+              "displayName": "notes/comments copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "task status",
+              "displayName": "task status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Todo",
+                  "value": "Todo"
+                },
+                {
+                  "name": "In progress",
+                  "value": "In progress"
+                },
+                {
+                  "name": "Done",
+                  "value": "Done"
+                },
+                {
+                  "name": "task status",
+                  "value": "task status"
+                },
+                {
+                  "name": "Task Status",
+                  "value": "Task Status"
+                },
+                {
+                  "name": "Not Started",
+                  "value": "Not Started"
+                },
+                {
+                  "name": "Started",
+                  "value": "Started"
+                },
+                {
+                  "name": "Overdue",
+                  "value": "Overdue"
+                },
+                {
+                  "name": "In Progress",
+                  "value": "In Progress"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Start date",
+              "displayName": "Start date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2848,
+        -512
+      ],
+      "id": "28f4bbb3-2577-4c3a-b943-7917c54bc866",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "yvEnp2K2VCx2eUnY",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2512,
+        -128
+      ],
+      "id": "e7c5364e-0fcc-404f-9d4d-3c339f8e6444",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many bases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many bases": {
+      "main": [
+        [
+          {
+            "node": "Get base schema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get base schema": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a8bedd80-76af-4133-9b7f-74918b20b2a3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0603ac33657d2e4f9dfa7c3c45cb65d43ca9c447b5eb137222cbce4e2bdc6273"
+  },
+  "id": "U28MYdJiqrW7vSuC",
+  "tags": []
+}
