@@ -1,0 +1,270 @@
+{
+  "name": "lead gen",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b2721198-7a51-4da2-b49f-25800c8a28ce",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "62f0ff0a-5403-4546-b1bc-677912a2e00c",
+      "name": "Webhook",
+      "webhookId": "b2721198-7a51-4da2-b49f-25800c8a28ce"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"startfield\": 1\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "627b0920-4312-45fc-bbbb-327dd6332011",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cx",
+              "value": "059f096904d8c4fca"
+            },
+            {
+              "name": "q",
+              "value": "=site:linkedin.com/in \"{{ $('Webhook').item.json.body.fullName }}\"  "
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyCTpckRjS6x-8WmlgVuZGP4uGQ3V1FbqZs"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "858af61e-adaa-4f7b-927a-7579f86ce295",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input example passed to this node is assumed to be in items[0].json\nconst input = items[0].json;\n\n// Initialize output object\nconst output = {};\n\n// Extract LinkedIn URL\noutput.linkedInUrl = input[\"og:url\"] || input.link || null;\n\n// Extract profile name from description if available\nif (input[\"twitter:description\"]) {\n  const desc = input[\"twitter:description\"];\n\n  // Try to get full name (before the \"’s profile\" part)\n  const nameMatch = desc.match(/View\\s+(.+?)’s profile/i);\n  if (nameMatch) {\n    output.fullName = nameMatch[1].trim();\n  }\n\n  // Extract current role + company\n  const roleCompanyMatch = desc.match(/^(.+?) at (.+?) ·/);\n  if (roleCompanyMatch) {\n    output.currentRole = roleCompanyMatch[1].trim();\n    output.currentCompany = roleCompanyMatch[2].trim();\n  }\n\n  // Extract location\n  const locationMatch = desc.match(/Location:\\s*([^·]+)/);\n  if (locationMatch) {\n    output.location = locationMatch[1].trim();\n  }\n\n  // Extract connections\n  const connectionsMatch = desc.match(/(\\d+)\\sconnections/);\n  if (connectionsMatch) {\n    output.connectionsCount = parseInt(connectionsMatch[1], 10);\n  }\n}\n\n// Return extracted profile summary as output\nreturn [{ json: output }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "59fc910f-e0cb-4fdd-be5d-cad9c748796f",
+      "name": "Code"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-fith.onrender.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+            "content-length": "312",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "accept-language": "en-US,en;q=0.9",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "106.222.223.95",
+            "cf-ipcountry": "IN",
+            "cf-ray": "96fef63128740690-PDX",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/json",
+            "origin": "https://632e586b-c98e-456f-ad7d-d5b27cb525ab.lovableproject.com",
+            "priority": "u=1, i",
+            "referer": "https://632e586b-c98e-456f-ad7d-d5b27cb525ab.lovableproject.com/",
+            "render-proxy-ttl": "4",
+            "rndr-id": "2eeb64d9-42c4-4ea1",
+            "sec-ch-ua": "\"Not)A;Brand\";v=\"8\", \"Chromium\";v=\"138\", \"Google Chrome\";v=\"138\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "true-client-ip": "106.222.223.95",
+            "x-forwarded-for": "106.222.223.95, 172.68.175.49, 10.223.34.180",
+            "x-forwarded-proto": "https",
+            "x-request-start": "1755326651203182"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "fullName": "Jijesh Raj ",
+            "email": "jijeshrajk@gmail.com",
+            "company": "ab inc",
+            "jobTitle": "sales manager",
+            "website": "https://www.leftclick.ai/",
+            "linkedinProfile": "https://www.linkedin.com/in/jijesh-raj-k-4960762bb/",
+            "phone": "8940051008",
+            "howDidYouFindUs": "social",
+            "message": "we need to automate our crm process . "
+          },
+          "webhookUrl": "https://n8n-fith.onrender.com/webhook-test/b2721198-7a51-4da2-b49f-25800c8a28ce",
+          "executionMode": "test"
+        }
+      }
+    ],
+    "HTTP Request": [
+      {
+        "json": {
+          "kind": "customsearch#search",
+          "url": {
+            "type": "application/json",
+            "template": "https://www.googleapis.com/customsearch/v1?q={searchTerms}&num={count?}&start={startIndex?}&lr={language?}&safe={safe?}&cx={cx?}&sort={sort?}&filter={filter?}&gl={gl?}&cr={cr?}&googlehost={googleHost?}&c2coff={disableCnTwTranslation?}&hq={hq?}&hl={hl?}&siteSearch={siteSearch?}&siteSearchFilter={siteSearchFilter?}&exactTerms={exactTerms?}&excludeTerms={excludeTerms?}&linkSite={linkSite?}&orTerms={orTerms?}&dateRestrict={dateRestrict?}&lowRange={lowRange?}&highRange={highRange?}&searchType={searchType}&fileType={fileType?}&rights={rights?}&imgSize={imgSize?}&imgType={imgType?}&imgColorType={imgColorType?}&imgDominantColor={imgDominantColor?}&alt=json"
+          },
+          "queries": {
+            "request": [
+              {
+                "title": "Google Custom Search - site:linkedin.com/in \"Jijesh Raj \"  ",
+                "totalResults": "1",
+                "searchTerms": "site:linkedin.com/in \"Jijesh Raj \"  ",
+                "count": 1,
+                "startIndex": 1,
+                "inputEncoding": "utf8",
+                "outputEncoding": "utf8",
+                "safe": "off",
+                "cx": "059f096904d8c4fca"
+              }
+            ]
+          },
+          "context": {
+            "title": "n8n"
+          },
+          "searchInformation": {
+            "searchTime": 0.183247,
+            "formattedSearchTime": "0.18",
+            "totalResults": "1",
+            "formattedTotalResults": "1"
+          },
+          "items": [
+            {
+              "kind": "customsearch#result",
+              "title": "jijesh raj - Project Leader at NCR Corporation | LinkedIn",
+              "htmlTitle": "<b>jijesh raj</b> - Project Leader at NCR Corporation | LinkedIn",
+              "link": "https://in.linkedin.com/in/jijesh-raj-22705117",
+              "displayLink": "in.linkedin.com",
+              "snippet": "Project Leader at NCR Corporation · Experience: NCR Corporation · Education: School name: · Location: Mumbai · 11 connections on LinkedIn. View jijesh raj's ...",
+              "htmlSnippet": "Project Leader at NCR Corporation · Experience: NCR Corporation · Education: School name: · Location: Mumbai · 11 connections on LinkedIn. View <b>jijesh raj&#39;s</b>&nbsp;...",
+              "formattedUrl": "https://in.linkedin.com/in/jijesh-raj-22705117",
+              "htmlFormattedUrl": "https://in.linkedin.com/in/<b>jijesh-raj</b>-22705117",
+              "pagemap": {
+                "cse_thumbnail": [
+                  {
+                    "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpEnMCOR-ytx0ZXHO2rgJlezc4CfXm5iHZMEjL8fSfOciDiTG4CU0Uc8QO&s",
+                    "width": "225",
+                    "height": "225"
+                  }
+                ],
+                "metatags": [
+                  {
+                    "og:image": "https://static.licdn.com/aero-v1/sc/h/1c5u578iilxfi4m4dvc4q810q",
+                    "twitter:card": "summary",
+                    "linkedin:pagetag": "openToProvider",
+                    "platform-worker": "https://static.licdn.com/aero-v1/sc/h/7nirg34a8ey4y2l4rw7xgwxx4",
+                    "al:android:package": "com.linkedin.android",
+                    "bingbot": "nocache",
+                    "locale": "en_US",
+                    "al:ios:url": "https://in.linkedin.com/in/jijesh-raj-22705117",
+                    "og:description": "Project Leader at NCR Corporation · Experience: NCR Corporation · Education: School name: · Location: Mumbai · 11 connections on LinkedIn. View jijesh raj’s profile on LinkedIn, a professional community of 1 billion members.",
+                    "al:ios:app_store_id": "288429040",
+                    "platform": "https://static.licdn.com/aero-v1/sc/h/50rhhil0lpchs3iqo4twn4tk9",
+                    "twitter:image": "https://static.licdn.com/aero-v1/sc/h/1c5u578iilxfi4m4dvc4q810q",
+                    "profile:last_name": "raj",
+                    "twitter:site": "@Linkedin",
+                    "litmsprofilename": "public-profile-frontend",
+                    "profile:first_name": "jijesh",
+                    "og:type": "profile",
+                    "twitter:title": "jijesh raj - Project Leader at NCR Corporation | LinkedIn",
+                    "al:ios:app_name": "LinkedIn",
+                    "og:title": "jijesh raj - Project Leader at NCR Corporation | LinkedIn",
+                    "pagekey": "public_profile_v3_mobile",
+                    "al:android:url": "https://in.linkedin.com/in/jijesh-raj-22705117",
+                    "viewport": "width=device-width, initial-scale=1.0",
+                    "twitter:description": "Project Leader at NCR Corporation · Experience: NCR Corporation · Education: School name: · Location: Mumbai · 11 connections on LinkedIn. View jijesh raj’s profile on LinkedIn, a professional community of 1 billion members.",
+                    "ubba": "https://static.licdn.com/aero-v1/sc/h/41b802ccd3dg7q90ypctzxybx",
+                    "og:url": "https://in.linkedin.com/in/jijesh-raj-22705117",
+                    "al:android:app_name": "LinkedIn"
+                  }
+                ],
+                "cse_image": [
+                  {
+                    "src": "https://static.licdn.com/aero-v1/sc/h/1c5u578iilxfi4m4dvc4q810q"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7bf2603a-9ce7-43b0-b2ad-7c585f56ffbe",
+  "meta": {
+    "instanceId": "0603ac33657d2e4f9dfa7c3c45cb65d43ca9c447b5eb137222cbce4e2bdc6273"
+  },
+  "id": "euWYjG1T7oBBDvrm",
+  "tags": []
+}
